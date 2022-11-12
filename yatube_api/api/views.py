@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from posts.models import Post, Group, Follow, User
 from rest_framework import (
-    viewsets, permissions, mixins, exceptions, pagination, filters
+    viewsets, permissions, mixins, pagination, filters
 )
 
 from .permissions import IsAuthorOrReadOnly
@@ -56,11 +56,4 @@ class FollowViewSet(mixins.ListModelMixin,
         return user.follower
 
     def perform_create(self, serializer: serializer_class):
-        following_username = self.request.data.get('following')
-        following_user = get_object_or_404(User, username=following_username)
-        follow = Follow.objects.filter(
-            user=self.request.user, following=following_user
-        )
-        if follow.exists() or self.request.user == following_user:
-            raise exceptions.ValidationError()
         serializer.save(user=self.request.user)
